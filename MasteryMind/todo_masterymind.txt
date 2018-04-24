@@ -1,0 +1,21 @@
+[V] Added a start screen to enter and save username.
+[V] Added a screen to alter difficulty*
+[V] Added a quit button and timeout setting
+[V] Added application flow from start > game > difficulty screen and back.
+[V] Added an end screen for when players quit**
+[V] Added scoring. Scoring scheme is now 5/10 pts for feedback and 50 points for solving for each turn earlier then 10.
+[V] Add leaderboard that can be peeked at.
+[V] Add faux leaderboard data.
+
+*) What should be the start difficulty and how does it progress? Currently: +/- 1 color and +/- 1 one ball, within the limits of 2-6 colors and 1-6 balls.
+**) Need to discuss how this transitions to the questionaires (and back).
+
+TODO:
+ww pwd tx4#aiF90eAH
+
+[ ] Layout and look and feel in web size
+
+[ ] Add help screen?
+[ ] Deploy in web server
+[ ] Implement behaviour logging and test data
+
