@@ -5,11 +5,14 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 
-// TODO: disabling all buttons is not enough; we need to limit interaction through a bool
-
 public class GameManager2 : MonoBehaviour
 {
-    // Structure for the faux leaderboard data
+    // Initialize and set values for point system
+	int[] ptsForRightPlaceForLevel = { 10, 12, 14, 16, 18, 20, 22, 24 };
+	int[] ptsForRightColorForLevel = { 1, 2, 3, 4, 5, 6, 7, 8 };
+	int[] ptsForSolvingPerTurnForLevel = { 50, 60, 70, 80, 90, 100, 110, 120 };
+
+	// Structure for the faux leaderboard data
     struct LeaderboardItem
     {
         public string name;
@@ -26,7 +29,7 @@ public class GameManager2 : MonoBehaviour
     {
        new LeaderboardItem("Albert",7500),
        new LeaderboardItem("Bert",6500),
-       new LeaderboardItem("Cecilia",6250),
+       new LeaderboardItem("Denise",6250),
        new LeaderboardItem("Davita",5750),
        new LeaderboardItem("Fanne",5300),
        new LeaderboardItem("Anneke",5200),
@@ -55,19 +58,11 @@ public class GameManager2 : MonoBehaviour
     bool solutionGuessed = false;
     bool outOfTurns = false;
     public bool paused = false;
-    bool usedHint = false;
-    bool usedCheat = false;
-    bool quitAvailable = false;
 
-    // Initial settings
+	// Inital settings
     public int numStartDigits = 3;
     public int numStartColors = 4;
-    public int secondsUntilQuitOption = 2 * 60;
-
-    // Scoring settings
-    public int ptsForRightPlace = 10;
-	public int ptsForRightColor = 5;
-    public int ptsForSolvingPerTurn = 50;
+	public int startDifficultyLevel = 0;
 
     float lastTimeLB = 0.0f;
 
@@ -86,9 +81,9 @@ public class GameManager2 : MonoBehaviour
             // Save difficulty to playerprefs
             PlayerPrefs.SetInt( "numDigits", Code.numDigits );
             PlayerPrefs.SetInt( "numColors", Code.numColors );
+			PlayerPrefs.SetInt("difficultyLevel",startDifficultyLevel);
 
             // Reset options
-            PlayerPrefs.SetInt( "secondsUntilQuitOption", secondsUntilQuitOption );
             PlayerPrefs.SetInt( "playerScore", 0 );
             PlayerPrefs.SetInt( "resetSession", 0 );
         }
@@ -102,9 +97,6 @@ public class GameManager2 : MonoBehaviour
         // Fetch the end-of-game panel and the leaderboard and hide it
         GameObject.Find( "Canvas" ).transform.Find( "CompletedPanel" ).gameObject.SetActive( false );
         GameObject.Find( "Canvas" ).transform.Find( "LeaderboardPanel" ).gameObject.SetActive( false );
-
-        // Disable the quit button
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = false;
 
         // Adjust available colors to num digits
         Transform ac = GameObject.Find( "ColorsAvailable" ).transform;
@@ -133,7 +125,7 @@ public class GameManager2 : MonoBehaviour
         // Prepare player and AI-computer
         player = new Player();
         parallelComputer = new Computer();
-        parallelComputer.PrepareGuess();
+        //parallelComputer.PrepareGuess();
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_START, Code.numDigits, Code.numColors, beadSets.Length, solution.ToString(), 0.0f );
@@ -150,8 +142,11 @@ public class GameManager2 : MonoBehaviour
         // Compute feedback
         Feedback fb = GiveFeedback( guess );
 
+		// get difficulty level to define scores
+		int difficultyLevel = PlayerPrefs.GetInt( "difficultyLevel" );
+
         // Give points for feedback
-        player.score += ptsForRightPlace * fb.numRightPlace + ptsForRightColor * fb.numRightColor;
+		//player.score += ptsForRightPlaceForLevel[difficultyLevel] * fb.numRightPlace + ptsForRightColorForLevel[difficultyLevel] * fb.numRightColor;
 
         // Advance player and AI-computer turns
         player.AdvanceTurn( guess, fb );
@@ -160,15 +155,24 @@ public class GameManager2 : MonoBehaviour
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_MOVE, fb.numRightPlace, fb.numRightColor, player.turn, guess.ToString(), 0.0f );
 
-        // Check if it is correct
+        // Check if it is correct & punten toekennen
         if( fb.IsCorrect() )
         {
-            player.score += (beadSets.Length-player.turn) * ptsForSolvingPerTurn;
+			//punten voor het winnen + bonuspunten voor hoeveel turns nog over (level begint bij 0 vanwege arrays, dus +1)
+			player.score += ptsForSolvingPerTurnForLevel[difficultyLevel] + ((difficultyLevel+1) * (beadSets.Length - player.turn));
             solutionGuessed = true;
 
             // Log
             GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_WON, player.score, 0, player.turn, "", 0.0f );
         }
+
+		// Punten toekennen als beurten op zijn
+		if ( beadSets.Length - player.turn == 0 )
+		{
+			// punten voor dingen die wel goed waren in de laatste beurt
+			player.score += ptsForRightPlaceForLevel[difficultyLevel] * fb.numRightPlace + ptsForRightColorForLevel[difficultyLevel] * fb.numRightColor;
+		}
+
 
         // Update the UI
         UpdateUI();
@@ -185,13 +189,16 @@ public class GameManager2 : MonoBehaviour
         // Disable the current bead set
         beadSets[currentBeadSet].MakeUneditable();
 
-        // Check lose condition
-        outOfTurns = ++currentBeadSet >= beadSets.Length;
-        if ( outOfTurns )
-        {
-            // Log
-            GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_LOST, player.score, 0, player.turn, "", 0.0f );
-        }
+		//out of turns
+		outOfTurns = ++currentBeadSet >= beadSets.Length;
+		if ( outOfTurns )
+		{
+			// Log
+			GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_LOST, player.score, 0, player.turn, "", 0.0f );
+		}
+        
+		// Check lose condition
+		//gekopieerd naar boven
 
         // Check for win/lose condition
         if( solutionGuessed || outOfTurns )
@@ -202,25 +209,9 @@ public class GameManager2 : MonoBehaviour
         {
             // Enable next
             beadSets[currentBeadSet].MakeEditable();
-            parallelComputer.PrepareGuess();
 
             // Update the UI
             UpdateUI();
-        }
-    }
-
-    void Update()
-    {
-        if( paused ) return;
-
-        // Enable the quit button if time has passed
-        if( !quitAvailable && Time.time >= secondsUntilQuitOption )
-        {
-            GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = true;
-            quitAvailable = true;
-
-            // Log
-            GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_QUIT_AVAILABLE, 0, 0, 0, "", 0.0f );
         }
     }
 
@@ -229,11 +220,8 @@ public class GameManager2 : MonoBehaviour
         if( paused ) return;
 
         // Provide a hint from the AI-computer
+		parallelComputer.PrepareGuess();
         beadSets[currentBeadSet].SetToCode( parallelComputer.guess );
-
-        // Disable the hint button
-        usedHint = true;
-        GameObject.Find( "Canvas" ).transform.Find("ButtonPanel").Find( "ButtonHint" ).GetComponent<Button>().interactable = false;
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_HINT, 0, 0, 0, parallelComputer.guess.ToString(), 0.0f );
@@ -244,12 +232,8 @@ public class GameManager2 : MonoBehaviour
         if( paused ) return;
 
         // Provide a cheat from the solution
-        int index = Random.Range( 0, Code.numDigits - 1 );
+        int index = Random.Range( 0, Code.numDigits );
         beadSets[currentBeadSet].SetBeadToColor( index, solution.code[index] );
-
-        // Disable the cheat button
-        usedCheat = true;
-        GameObject.Find( "Canvas" ).transform.Find("ButtonPanel").Find( "ButtonCheat" ).GetComponent<Button>().interactable = false;
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_CHEAT, index, solution.code[index], player.turn, "", 0.0f );
@@ -265,7 +249,6 @@ public class GameManager2 : MonoBehaviour
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonCheat" ).GetComponent<Button>().interactable = false;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonLeaderboard" ).GetComponent<Button>().interactable = false;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonSkip" ).GetComponent<Button>().interactable = false;
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = false;
 
         // Update player slot in leaderboard data
         string username = PlayerPrefs.GetString( "username" );
@@ -331,11 +314,10 @@ public class GameManager2 : MonoBehaviour
         GameObject.Find( "Canvas" ).transform.Find( "LeaderboardPanel" ).gameObject.SetActive( false );
 
         // Enable all buttons
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonHint" ).GetComponent<Button>().interactable = !usedHint;
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonCheat" ).GetComponent<Button>().interactable = !usedCheat;
+        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonHint" ).GetComponent<Button>().interactable = true;
+        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonCheat" ).GetComponent<Button>().interactable = true;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonLeaderboard" ).GetComponent<Button>().interactable = true;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonSkip" ).GetComponent<Button>().interactable = true;
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = quitAvailable;
 
         // Unpause
         paused = false;
@@ -352,17 +334,6 @@ public class GameManager2 : MonoBehaviour
         GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_SKIPPED, player.score, 0, player.turn, "", 0.0f );
 
         CompleteGame();
-    }
-
-    public void OnQuit()
-    {
-        if( paused ) return;
-
-        // Log
-        GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_QUIT, player.score, 0, player.turn, "", 0.0f );
-        GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_END, 0, 0, 0, "", 0.0f );
-
-        SceneManager.LoadScene( "EndScreen" );
     }
 
     public void OnContinue()
@@ -384,7 +355,6 @@ public class GameManager2 : MonoBehaviour
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonCheat" ).GetComponent<Button>().interactable = false;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonLeaderboard" ).GetComponent<Button>().interactable = false;
         GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonSkip" ).GetComponent<Button>().interactable = false;
-        GameObject.Find( "Canvas" ).transform.Find( "ButtonPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = false;
 
         // Save score
         PlayerPrefs.SetInt( "playerScore", player.score );
@@ -392,12 +362,12 @@ public class GameManager2 : MonoBehaviour
         // Fetch the end-of-game panel
         Transform panel = GameObject.Find( "Canvas" ).transform.Find( "CompletedPanel" ).transform;
         if( solutionGuessed )
-            panel.Find( "TextResult" ).GetComponent<Text>().text = "YOU WON!";
+            panel.Find( "TextResult" ).GetComponent<Text>().text = "Je hebt de code geraden.";
         else if( outOfTurns )
-            panel.Find( "TextResult" ).GetComponent<Text>().text = "YOU LOST!";
+            panel.Find( "TextResult" ).GetComponent<Text>().text = "Je hebt de code niet geraden.";
         else
-            panel.Find( "TextResult" ).GetComponent<Text>().text = "YOU SKIPPED";
-        panel.Find( "TextMessage" ).GetComponent<Text>().text = "You took " + player.turn + " turns.";
+            panel.Find( "TextResult" ).GetComponent<Text>().text = "Je hebt het spel overgeslagen.";
+        panel.Find( "TextMessage" ).GetComponent<Text>().text = "Je hebt " + player.turn + " beurten gebruikt.";
         panel.gameObject.SetActive( true );
     }
 
@@ -406,6 +376,7 @@ public class GameManager2 : MonoBehaviour
         GameObject canvas = GameObject.Find( "Canvas" );
         canvas.transform.Find( "UserPanel" ).Find( "TextUsername" ).GetComponent<Text>().text = PlayerPrefs.GetString( "username" );
         canvas.transform.Find( "UserPanel" ).Find( "TextScore" ).GetComponent<Text>().text = player.score.ToString();
+		canvas.transform.Find( "UserPanel" ).Find( "TextLevelX" ).GetComponent<Text>().text = ( 1 + PlayerPrefs.GetInt("difficultyLevel")).ToString();
     }
 
     public Feedback GiveFeedback( Code guess )

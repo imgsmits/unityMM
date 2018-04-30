@@ -83,4 +83,20 @@ public class CodeSet
         // Return the eliminated codes count
         return eliminated;
     }
+	
+	public int PredictNumEliminated(Code guess,Feedback feedback)
+	{
+        int newNumCodes = 0;
+
+        // Loop through all codes and calculate feedback; only add to the new set those codes
+        // that would give that feedback
+        for ( int i = 0; i < numCodes;  i++ )
+        {
+            if( Code.CalculateFeedback( guess, codes[i] ) == feedback )
+                newNumCodes++;
+        }
+
+        // Calculate how many eliminated
+        return numCodes - newNumCodes;
+	}
 }

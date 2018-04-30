@@ -38,3 +38,43 @@ D:\Downloads\Documents\__Research Project\Development\MasteryMind\Temp\bin\Debug
 D:\Downloads\Documents\__Research Project\Development\MasteryMind\Temp\bin\Debug\UnityEngine.SpatialTracking.xml
 D:\Downloads\Documents\__Research Project\Development\MasteryMind\obj\Debug\Assembly-CSharp.dll
 D:\Downloads\Documents\__Research Project\Development\MasteryMind\obj\Debug\Assembly-CSharp.pdb
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\obj\Debug\Assembly-CSharp.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Assembly-CSharp.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Assembly-CSharp.pdb
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\nunit.framework.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEditor.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Advertisements.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Analytics.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.GoogleAudioSpatializer.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.HoloLens.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Networking.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Purchasing.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.SpatialTracking.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.StandardEvents.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.TestRunner.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Timeline.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.UI.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.UIAutomation.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.Cecil.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.SerializationLogic.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.DataContract.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\ExCSS.Unity.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.Legacy.NRefactory.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.UNetWeaver.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.CecilTools.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.Cecil.Pdb.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\Unity.Cecil.Mdb.dll
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEditor.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.UI.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Networking.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.TestRunner.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\nunit.framework.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.Timeline.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.UIAutomation.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.GoogleAudioSpatializer.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.HoloLens.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\Temp\bin\Debug\UnityEngine.SpatialTracking.xml
+D:\Downloads\Documents\GitHub\unityMM\MasteryMind\obj\Debug\Assembly-CSharp.pdb

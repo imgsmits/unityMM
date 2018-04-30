@@ -18,7 +18,8 @@ public class EnterUsername : MonoBehaviour
 
         // Fetch userid from URL
         string url = Application.absoluteURL;
-        string userid = url.Substring(url.LastIndexOf("id=")+3);
+		url = "http://www.blablabla.nl/?90#id";
+        string userid = url.Substring(url.LastIndexOf("?")+1);
         PlayerPrefs.SetString( "userid", userid );
 
         // Disable the continue button

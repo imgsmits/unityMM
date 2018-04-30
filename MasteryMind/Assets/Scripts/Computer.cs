@@ -12,15 +12,18 @@ public class Computer
     public int predictedEliminations = 0;
     public int lastPredictedEliminations = 0;
     public int lastEliminations = 0;
+	
+	Feedback[] possibleFeedback = null;
 
     public Computer()
     {
+		// Add all codes to the set
         codeSet = new CodeSet();
-        codeSet.AddAllCodes();   
-	}
+        codeSet.AddAllCodes(); 
 
-    public Code PrepareGuess()
-    {
+		// Prepare room for code scoring
+		codeScore = new int[codeSet.numCodes];		
+
         // Determine number of possible feedback combinations
         int numPossibleFeedback = 0;
         for( int i = 0; i < Code.numDigits; i++ )
@@ -29,13 +32,16 @@ public class Computer
                     numPossibleFeedback++;
 
         // Generate possible feedback combinations
-        Feedback[] possibleFeedback = new Feedback[numPossibleFeedback];
+        possibleFeedback = new Feedback[numPossibleFeedback];
         numPossibleFeedback = 0;
         for( int i = 0; i < Code.numDigits; i++ )
             for( int j = 0; j < Code.numDigits; j++ )
                 if( i + j <= Code.numDigits )
-                    possibleFeedback[numPossibleFeedback++] = new Feedback( i, j );
+                    possibleFeedback[numPossibleFeedback++] = new Feedback( i, j );		
+	}
 
+    public Code PrepareGuess()
+    {
         // Generate guess for first turn
         if ( turn == 0 )
         {
@@ -54,7 +60,8 @@ public class Computer
             guess = new Code( code );
 
             // Find the feedback that gives the lowest eliminations
-            int minScore = int.MaxValue;
+			// NOTE: disable for speed
+            /*int minScore = int.MaxValue;
             for( int j = 0; j < possibleFeedback.Length; j++ )
             {
                 int localScore = codeSet.Eliminate( guess, possibleFeedback[j], true );
@@ -65,12 +72,46 @@ public class Computer
             // Take that value as the predicted number of eliminations
             lastPredictedEliminations = predictedEliminations;
             predictedEliminations = minScore;
+			*/
         }
+		
+		// Generate guess for second turn (and 3rd turn for 6/6 combos)
+		// This does not generate the *best* hint but the *first* hint that eliminates over 80% of the codes
+		else if ( turn == 1 || (Code.numDigits==6&&Code.numColors==6&&turn==2) )
+		{
+			// For each code left calculate the score it would get for any feedback, taking the least
+            // number of predicted eliminations, and thereof find the highest candidate
+            int maxScoreIndex = -1;
+            for( int i = 0; i < codeSet.numCodes; i++ )
+            {
+                // Prepare code score for min search
+                codeScore[i] = int.MaxValue;
+
+                // For each possible feedback F find the lowest predicted eliminations
+                for( int j = 0; j < possibleFeedback.Length; j++ )
+                {
+                    int localScore = codeSet.PredictNumEliminated( codeSet.codes[i], possibleFeedback[j] );
+                    if( localScore < codeScore[i] )
+                        codeScore[i] = localScore;
+                }
+
+                // Update max score by taking the code that scorest highest even with its
+                // minimal estimated eliminations
+                if( maxScoreIndex < 0 || codeScore[maxScoreIndex] < codeScore[i] )
+                    maxScoreIndex = i;
+				
+				// Check: if it elimnates over a certain percentage then we will take this
+				float percentageLeft = (codeSet.numCodes-codeScore[maxScoreIndex])/(float)codeSet.numCodes;
+				//Debug.Log("\t (num - scr) / (num) = ("+codeSet.numCodes+" - "+codeScore[maxScoreIndex]+") / "+ codeSet.numCodes+" = "+
+				if ( percentageLeft < 0.20f )
+					break;
+            }
+
+            // Take that code as the guess and set eliminations
+            guess = new Code( codeSet.codes[maxScoreIndex] );
+		}
         else
         {
-            // Reset the scores for all codes left
-            codeScore = new int[codeSet.numCodes];
-
             // For each code left calculate the score it would get for any feedback, taking the least
             // number of predicted eliminations, and thereof find the highest candidate
 
@@ -86,7 +127,7 @@ public class Computer
                 // For each possible feedback F find the lowest predicted eliminations
                 for( int j = 0; j < possibleFeedback.Length; j++ )
                 {
-                    int localScore = codeSet.Eliminate( codeSet.codes[i], possibleFeedback[j], true );
+                    int localScore = codeSet.PredictNumEliminated( codeSet.codes[i], possibleFeedback[j] );
                     if( localScore < codeScore[i] )
                         codeScore[i] = localScore;
                 }
@@ -99,8 +140,9 @@ public class Computer
 
             // Take that code as the guess and set eliminations
             guess = new Code( codeSet.codes[maxScoreIndex] );
-            lastPredictedEliminations = predictedEliminations;
-            predictedEliminations = codeScore[maxScoreIndex];
+			// NOTE: disable for speed
+            //lastPredictedEliminations = predictedEliminations;
+            //predictedEliminations = codeScore[maxScoreIndex];
         }
 
         return guess;

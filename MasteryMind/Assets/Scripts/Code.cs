@@ -75,6 +75,9 @@ public class Code
         int numRightColor = 0;
         for( int i = 0; i < numDigits; i++ )
         {
+			if(copyGuess.code[i]==-1)
+				continue;
+			
             for( int j = 0; j < numDigits; j++ )
             {
                 if( copyGuess.code[i] != -1 && copySolution.code[j] != -1 && copyGuess.code[i] == copySolution.code[j] )

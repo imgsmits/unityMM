@@ -483,7 +483,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: WELCOME
+  m_Text: WELKOM
 --- !u!222 &525143915
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -652,7 +652,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Your name...
+  m_Text: Je naam...
 --- !u!222 &808780098
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -726,7 +726,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Please enter your name and then click on continue.
+  m_Text: Vul je naam in en klik op volgende.
 --- !u!222 &1078877840
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1014,7 +1014,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: CONTINUE
+  m_Text: VOLGENDE
 --- !u!222 &1632726057
 CanvasRenderer:
   m_ObjectHideFlags: 0

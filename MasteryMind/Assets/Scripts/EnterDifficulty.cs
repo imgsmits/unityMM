@@ -6,21 +6,21 @@ using UnityEngine.UI;
 
 public class EnterDifficulty : MonoBehaviour
 {
+	int difficultyLevel = 0;
+	int[] numColorsForLevel = {4,4,4,5,5,5,6,6};
+	int[] numDigitsForLevel = {3,4,5,4,5,6,5,6};
+	
     float lastTimeDif = 0.0f;
 
     void Start()
     {
-        // Enable/disable quit button based on playing time
-        if( Time.time >= PlayerPrefs.GetInt( "secondsUntilQuitOption" ) )
-        {     
-            GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = true;
-            GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "TextMessage" ).GetComponent<Text>().text = "Please choose the difficulty of the next game, or choose to quit the game.";
-        }
-        else
-        {
-            GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "ButtonQuit" ).GetComponent<Button>().interactable = false;
-            GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "TextMessage" ).GetComponent<Text>().text = "Please choose the difficulty of the next game.";
-        }
+		
+		// Disable easier/harder if unavailable
+		difficultyLevel = PlayerPrefs.GetInt("difficultyLevel");
+		if ( difficultyLevel == 0 )
+			GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "ButtonEasier" ).GetComponent<Button>().interactable = false;
+		else if ( difficultyLevel == numColorsForLevel.Length -1 )
+			GameObject.Find( "Canvas" ).transform.Find( "DifficultyPanel" ).Find( "ButtonHarder" ).GetComponent<Button>().interactable = false;
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_DIFFICULTY_SHOW, 0, 0, 0, "", 0.0f );
@@ -30,12 +30,15 @@ public class EnterDifficulty : MonoBehaviour
     public void OnEasier()
     {
         // Make easier
-        Code.numDigits = Mathf.Max( 1, PlayerPrefs.GetInt( "numDigits" ) - 1 );
-        Code.numColors = Mathf.Max( 2, PlayerPrefs.GetInt( "numColors" ) - 1 );
+		difficultyLevel = PlayerPrefs.GetInt("difficultyLevel");
+		difficultyLevel = Mathf.Max(0,difficultyLevel - 1);
+        Code.numDigits = numDigitsForLevel[difficultyLevel];
+        Code.numColors = numColorsForLevel[difficultyLevel];
 
         // Save to playerprefs
         PlayerPrefs.SetInt( "numDigits", Code.numDigits );
         PlayerPrefs.SetInt( "numColors", Code.numColors );
+		PlayerPrefs.SetInt( "difficultyLevel", difficultyLevel );
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_DIFFICULTY_SET, Code.numDigits, Code.numColors, 0, "EASIER", 0.0f );
@@ -57,13 +60,16 @@ public class EnterDifficulty : MonoBehaviour
 
     public void OnHarder()
     {
-        // Make easier
-        Code.numDigits = Mathf.Min( 5, PlayerPrefs.GetInt( "numDigits" ) + 1 );
-        Code.numColors = Mathf.Min( 6, PlayerPrefs.GetInt( "numColors" ) + 1 );
+        // Make harder
+		difficultyLevel = PlayerPrefs.GetInt("difficultyLevel");
+		difficultyLevel = Mathf.Max(0,difficultyLevel + 1);
+        Code.numDigits = numDigitsForLevel[difficultyLevel];
+        Code.numColors = numColorsForLevel[difficultyLevel];
 
         // Save to playerprefs
         PlayerPrefs.SetInt( "numDigits", Code.numDigits );
         PlayerPrefs.SetInt( "numColors", Code.numColors );
+		PlayerPrefs.SetInt( "difficultyLevel", difficultyLevel );
 
         // Log
         GetComponent<DataLogger>().Log( DataLogger.EVENT_DIFFICULTY_SET, Code.numDigits, Code.numColors, 0, "HARDER", 0.0f );
@@ -71,14 +77,5 @@ public class EnterDifficulty : MonoBehaviour
 
         // Start game
         SceneManager.LoadScene( "GameScreen" );
-    }
-
-    public void OnQuit()
-    {
-        // Log
-        GetComponent<DataLogger>().Log( DataLogger.EVENT_GAME_QUIT, 0, 0, 0, "", 0.0f );
-        GetComponent<DataLogger>().Log( DataLogger.EVENT_DIFFICULTY_HIDE, 0, 0, 0, "", 0.0f );
-
-        SceneManager.LoadScene( "EndScreen" );
     }
 }
